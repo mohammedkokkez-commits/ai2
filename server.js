@@ -5,12 +5,12 @@ var path = require('path');
 
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
+// تم تثبيت رابط و نموذج Groq بشكل مباشر هنا لضمان عدم حدوث أي خطأ
 var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-var MODEL = 'llama-3.1-8b-instant'; // النموذج النشط والحديث حالياً على Groq
+var MODEL = 'openai/gpt-oss-120b';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
-
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
-  'You are a direct, confident, and precise AI assistant. Always reply in the same language the user writes in. Provide clear, accurate, and up-to-date answers.';
+  'You are a helpful assistant. Reply in the same language the user writes in. Keep answers clear and not too long.';
 
 var PAGE = fs.readFileSync(path.join(__dirname, 'public', 'index.html'));
 
@@ -53,7 +53,7 @@ function chat(req, res) {
     var today = new Date().toISOString().slice(0, 10);
     msgs.unshift({
       role: 'system',
-      content: SYSTEM_PROMPT + ' Today is ' + today + '.'
+      content: SYSTEM_PROMPT + ' Today is ' + today + '. Your knowledge may be outdated for recent events; say so instead of guessing.'
     });
 
     var ctrl = new AbortController();
