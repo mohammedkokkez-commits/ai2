@@ -5,8 +5,9 @@ var path = require('path');
 
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
-var API_URL = process.env.API_URL || 'https://openrouter.ai/api/v1/chat/completions';
-var MODEL = process.env.MODEL || 'openrouter/free';
+// تم تثبيت رابط و نموذج Groq بشكل مباشر هنا لضمان عدم حدوث أي خطأ
+var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+var MODEL = 'openai/gpt-oss-120b';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
   'You are a helpful assistant. Reply in the same language the user writes in. Keep answers clear and not too long.';
@@ -67,19 +68,14 @@ function chat(req, res) {
       },
       body: JSON.stringify({ model: MODEL, messages: msgs })
     }).then(function (r) {
-      return r.text().then(function (t) {
-        var j = null;
-        try { j = JSON.parse(t); } catch (e) {}
-        return { ok: r.ok, status: r.status, j: j, raw: t };
-      });
+      return r.json().then(function (j) { return { ok: r.ok, j: j }; });
     }).then(function (o) {
       clearTimeout(timer);
-      var j = Array.isArray(o.j) ? o.j[0] : o.j;
-      var text = j && j.choices && j.choices[0] && j.choices[0].message &&
-        j.choices[0].message.content;
+      var text = o.j && o.j.choices && o.j.choices[0] && o.j.choices[0].message &&
+        o.j.choices[0].message.content;
       if (o.ok && text) { return send(res, 200, { reply: text }); }
-      var why = (j && j.error && (j.error.message || j.error)) || o.raw || 'no reply from the model';
-      send(res, 502, { error: '(' + o.status + ') ' + String(why).slice(0, 300) });
+      var why = (o.j && o.j.error && (o.j.error.message || o.j.error)) || 'no reply from the model';
+      send(res, 502, { error: String(why).slice(0, 300) });
     }).catch(function (e) {
       clearTimeout(timer);
       send(res, 502, { error: e && e.name === 'AbortError' ? 'timeout, try again' : 'could not reach the AI service' });
