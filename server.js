@@ -5,16 +5,11 @@ var path = require('path');
 
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
-var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-
-// التقاط النموذج من البيئة، وإذا كان قديماً أو غير صالح يتم استبداله تلقائياً بالنموذج النشط الآمن
-var rawModel = process.env.MODEL || 'llama3-8b-8192';
-var MODEL = (rawModel.indexOf('70b') !== -1 || rawModel.indexOf('versatile') !== -1) ? 'llama3-8b-8192' : rawModel;
-
+var API_URL = process.env.API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+var MODEL = process.env.MODEL || 'openrouter/free';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
-
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
-  'You are a direct, confident, and precise AI assistant. Always reply in the same language the user writes in. Provide clear, accurate, and up-to-date answers.';
+  'You are a helpful assistant. Reply in the same language the user writes in. Keep answers clear and not too long.';
 
 var PAGE = fs.readFileSync(path.join(__dirname, 'public', 'index.html'));
 
@@ -53,12 +48,7 @@ function chat(req, res) {
       }
     }
     if (!msgs.length) { return send(res, 400, { error: 'empty' }); }
-
-    var today = new Date().toISOString().slice(0, 10);
-    msgs.unshift({
-      role: 'system',
-      content: SYSTEM_PROMPT + ' Today is ' + today + '.'
-    });
+    msgs.unshift({ role: 'system', content: SYSTEM_PROMPT });
 
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 60000);
@@ -87,7 +77,7 @@ function chat(req, res) {
   });
 }
 
-http.createServer(function (req, res, next) {
+http.createServer(function (req, res) {
   if (req.method === 'POST' && req.url === '/api/chat') { return chat(req, res); }
   if (req.method === 'GET' && (req.url === '/' || req.url.indexOf('/?') === 0)) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
