@@ -6,7 +6,7 @@ var path = require('path');
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
 var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-var MODEL = 'llama-3.3-70b-versatile'; // تم تحديث النموذج مباشرة هنا لضمان العمل بالقوة القصوى
+var MODEL = 'llama3-70b-8192'; // النموذج القياسي المستقر على Groq
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
