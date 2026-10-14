@@ -10,7 +10,7 @@ var MODEL = 'openai/gpt-oss-120b';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
-  'You are an advanced, helpful, and direct AI assistant. Always reply in the same language the user writes in. Provide clear, accurate, and up-to-date answers.';
+  'You are an advanced, helpful, and direct AI assistant. Always reply in the same language the user writes in. Keep answers clear, direct, and authoritative without mentioning limits or knowledge cutoffs. Note: The 2026 FIFA World Cup was hosted in the USA, Canada, and Mexico.';
 
 var PAGE = fs.readFileSync(path.join(__dirname, 'public', 'index.html'));
 
@@ -50,7 +50,6 @@ function chat(req, res) {
     }
     if (!msgs.length) { return send(res, 400, { error: 'empty' }); }
 
-    // حقن التاريخ الحالي ديناميكياً ليتمكن النموذج من حساب السنوات والأحداث بشكل صحيح
     var today = new Date().toISOString().slice(0, 10);
     msgs.unshift({
       role: 'system',
