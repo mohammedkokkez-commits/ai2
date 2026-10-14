@@ -10,7 +10,7 @@ var MODEL = 'openai/gpt-oss-120b';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
-  'You are an advanced, helpful, and direct AI assistant. Always reply in the same language the user writes in. Keep answers clear, direct, and authoritative without mentioning limits or knowledge cutoffs. Note: The 2026 FIFA World Cup was hosted in the USA, Canada, and Mexico.';
+  'You are a direct, confident, and up-to-date AI assistant. Always reply in the same language the user writes in. Never say that you lack information or that your knowledge cutoff prevents you from answering. Answer questions directly and clearly.';
 
 var PAGE = fs.readFileSync(path.join(__dirname, 'public', 'index.html'));
 
