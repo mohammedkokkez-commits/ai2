@@ -67,14 +67,19 @@ function chat(req, res) {
       },
       body: JSON.stringify({ model: MODEL, messages: msgs })
     }).then(function (r) {
-      return r.json().then(function (j) { return { ok: r.ok, j: j }; });
+      return r.text().then(function (t) {
+        var j = null;
+        try { j = JSON.parse(t); } catch (e) {}
+        return { ok: r.ok, status: r.status, j: j, raw: t };
+      });
     }).then(function (o) {
       clearTimeout(timer);
-      var text = o.j && o.j.choices && o.j.choices[0] && o.j.choices[0].message &&
-        o.j.choices[0].message.content;
+      var j = Array.isArray(o.j) ? o.j[0] : o.j;
+      var text = j && j.choices && j.choices[0] && j.choices[0].message &&
+        j.choices[0].message.content;
       if (o.ok && text) { return send(res, 200, { reply: text }); }
-      var why = (o.j && o.j.error && (o.j.error.message || o.j.error)) || 'no reply from the model';
-      send(res, 502, { error: String(why).slice(0, 300) });
+      var why = (j && j.error && (j.error.message || j.error)) || o.raw || 'no reply from the model';
+      send(res, 502, { error: '(' + o.status + ') ' + String(why).slice(0, 300) });
     }).catch(function (e) {
       clearTimeout(timer);
       send(res, 502, { error: e && e.name === 'AbortError' ? 'timeout, try again' : 'could not reach the AI service' });
