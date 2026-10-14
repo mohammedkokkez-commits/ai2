@@ -48,12 +48,7 @@ function chat(req, res) {
       }
     }
     if (!msgs.length) { return send(res, 400, { error: 'empty' }); }
-
-    var today = new Date().toISOString().slice(0, 10);
-    msgs.unshift({
-      role: 'system',
-      content: SYSTEM_PROMPT + ' Today is ' + today + '. Your knowledge may be outdated for recent events; say so instead of guessing.'
-    });
+    msgs.unshift({ role: 'system', content: SYSTEM_PROMPT });
 
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 60000);
