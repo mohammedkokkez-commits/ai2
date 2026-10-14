@@ -6,7 +6,11 @@ var path = require('path');
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
 var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-var MODEL = 'llama3-8b-8192'; // النموذج النشط والمستقر نهائياً على Groq
+
+// التقاط النموذج من البيئة، وإذا كان قديماً أو غير صالح يتم استبداله تلقائياً بالنموذج النشط الآمن
+var rawModel = process.env.MODEL || 'llama3-8b-8192';
+var MODEL = (rawModel.indexOf('70b') !== -1 || rawModel.indexOf('versatile') !== -1) ? 'llama3-8b-8192' : rawModel;
+
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
@@ -83,7 +87,7 @@ function chat(req, res) {
   });
 }
 
-http.createServer(function (req, res) {
+http.createServer(function (req, res, next) {
   if (req.method === 'POST' && req.url === '/api/chat') { return chat(req, res); }
   if (req.method === 'GET' && (req.url === '/' || req.url.indexOf('/?') === 0)) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
