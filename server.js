@@ -47,9 +47,13 @@ function chat(req, res) {
         msgs.push({ role: m.role, content: m.content.slice(0, 4000) });
       }
     }
-        if (!msgs.length) { return send(res, 400, { error: 'empty' }); }
-    msgs.unshift({ role: 'system', content: SYSTEM_PROMPT + ' Today is ' + new Date().toISOString().slice(0, 10) + '. Your knowledge may be outdated for recent events; say so instead of guessing.' });
+    if (!msgs.length) { return send(res, 400, { error: 'empty' }); }
 
+    var today = new Date().toISOString().slice(0, 10);
+    msgs.unshift({
+      role: 'system',
+      content: SYSTEM_PROMPT + ' Today is ' + today + '. Your knowledge may be outdated for recent events; say so instead of guessing.'
+    });
 
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 60000);
