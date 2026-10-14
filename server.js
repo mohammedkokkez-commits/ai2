@@ -5,9 +5,8 @@ var path = require('path');
 
 var PORT = process.env.PORT || 3000;
 var API_KEY = process.env.API_KEY || '';
-// تم تثبيت رابط و نموذج Groq بشكل مباشر هنا لضمان عدم حدوث أي خطأ
-var API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-var MODEL = 'openai/gpt-oss-120b';
+var API_URL = process.env.API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+var MODEL = process.env.MODEL || 'openrouter/free';
 var ACCESS_CODE = process.env.ACCESS_CODE || '';
 var SYSTEM_PROMPT = process.env.SYSTEM_PROMPT ||
   'You are a helpful assistant. Reply in the same language the user writes in. Keep answers clear and not too long.';
